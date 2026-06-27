@@ -1,18 +1,21 @@
 # 寻路信标
 
-适用于《我的世界》Java 版 1.21.1 的 Fabric（织物）模组。使用 30 种编号方块建立贯穿世界高度的彩色寻路线。
+适用于《我的世界》Java 版 Fabric（织物）的多版本模组。使用 30 种编号方块建立贯穿世界高度的彩色寻路线。
 
-## 当前版本信息
+## 模组信息
 
 - 模组名称：寻路信标
 - 模组 ID：`pathfinding_beacon`
 - 模组版本：`1.0.0`
-- Minecraft（我的世界）Java 版：`1.21.1`
-- Java（爪哇）：`21` 或更高兼容版本
-- Fabric Loader（Fabric 模组加载器）：`0.19.3` 或更高兼容版本
-- Fabric API（Fabric 应用程序接口）：`0.116.12+1.21.1`
-- Fabric Loom（Fabric 构建插件）：`1.7.4`
-- Yarn Mappings（Yarn 命名映射）：`1.21.1+build.3`
+- 当前已发布版本见 [SUPPORTED_VERSIONS.md](SUPPORTED_VERSIONS.md)。
+- 下载文件见 [Releases（发布页）](https://github.com/quit5700/pathfinding-beacon/releases)。
+
+## 已发布适配版本
+
+| Minecraft（我的世界）Java 版 | Java（爪哇） | Fabric Loader（Fabric 模组加载器） | Fabric API（Fabric 应用程序接口） | 下载文件 |
+| --- | --- | --- | --- | --- |
+| `1.20.4` | `17` | `0.15.11` | `0.97.3+1.20.4` | `pathfinding-beacon-1.0.0-mc1.20.4-fabric.jar` |
+| `1.21.1` | `21` | `0.19.3` | `0.116.12+1.21.1` | `pathfinding-beacon-1.0.0-mc1.21.1-fabric.jar` |
 
 ## 必须安装
 
@@ -22,9 +25,11 @@
 
 ## 安装
 
-1. 安装适用于《我的世界》Java 版 1.21.1 的 Fabric Loader（Fabric 模组加载器）。
-2. 把 Fabric API（Fabric 应用程序接口）和 `pathfinding-beacon-1.0.0.jar` 放入游戏的 `mods`（模组）文件夹。
-3. 启动游戏。“寻路”创造模式标签页中包含全部方块与工具。
+1. 按上方表格选择与你游戏版本一致的 JAR（Java 归档）。
+2. 安装对应版本的 Fabric Loader（Fabric 模组加载器）。
+3. 安装对应版本的 Fabric API（Fabric 应用程序接口）。
+4. 把下载的 `pathfinding-beacon-...-fabric.jar` 放入游戏的 `mods`（模组）文件夹。
+5. 启动游戏。“寻路”创造模式标签页中包含全部方块与工具。
 
 ## 配方
 
