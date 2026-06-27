@@ -25,7 +25,6 @@ public final class SequenceReordererItem extends Item {
         super(settings);
     }
 
-    @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         return false;
     }

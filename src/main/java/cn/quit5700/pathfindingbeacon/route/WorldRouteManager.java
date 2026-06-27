@@ -14,7 +14,7 @@ public final class WorldRouteManager {
     }
 
     public static RoutePersistentState state(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(RoutePersistentState.TYPE, RoutePersistentState.ID);
+        return world.getPersistentStateManager().getOrCreate(RoutePersistentState.TYPE);
     }
 
     public static PlacementResult place(ServerWorld world, int number, UUID player, BlockPos pos) {

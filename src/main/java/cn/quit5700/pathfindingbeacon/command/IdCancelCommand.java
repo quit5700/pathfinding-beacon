@@ -23,7 +23,7 @@ public final class IdCancelCommand {
                                 .executes(context -> {
                                     ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
                                     int number = IntegerArgumentType.getInteger(context, "number");
-                                    int removed = WorldRouteManager.clearColor(player.getServerWorld(), number);
+                                    int removed = WorldRouteManager.clearColor(player.getEntityWorld(), number);
                                     context.getSource().sendFeedback(
                                             () -> Text.literal("已删除本维度" + number + "号寻路方块：" + removed + "个"),
                                             false

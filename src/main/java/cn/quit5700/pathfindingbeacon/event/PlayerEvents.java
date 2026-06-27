@@ -6,11 +6,13 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,16 +37,16 @@ public final class PlayerEvents {
         if (++ticks % 20 != 0) {
             return;
         }
-        List<Identifier> ids = new ArrayList<>();
-        ids.add(PathfindingBeaconMod.id("route_block_1"));
+        List<RegistryKey<Recipe<?>>> ids = new ArrayList<>();
+        ids.add(recipeKey("route_block_1"));
         for (int i = 2; i <= 30; i++) {
-            ids.add(PathfindingBeaconMod.id("route_block_" + i));
+            ids.add(recipeKey("route_block_" + i));
         }
-        ids.add(PathfindingBeaconMod.id("pathfinding_block_canceller"));
-        ids.add(PathfindingBeaconMod.id("id_sequence_reorderer"));
+        ids.add(recipeKey("pathfinding_block_canceller"));
+        ids.add(recipeKey("id_sequence_reorderer"));
 
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            boolean hasPickaxe = player.getInventory().main.stream().anyMatch(PlayerEvents::isPickaxe);
+            boolean hasPickaxe = player.getInventory().getMainStacks().stream().anyMatch(PlayerEvents::isPickaxe);
             if (hasPickaxe) {
                 player.unlockRecipes(ids);
             }
@@ -53,5 +55,9 @@ public final class PlayerEvents {
 
     private static boolean isPickaxe(ItemStack stack) {
         return stack.isIn(ItemTags.PICKAXES);
+    }
+
+    private static RegistryKey<Recipe<?>> recipeKey(String path) {
+        return RegistryKey.of(RegistryKeys.RECIPE, PathfindingBeaconMod.id(path));
     }
 }

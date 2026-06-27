@@ -12,7 +12,6 @@ public final class CancellerItem extends Item {
         super(settings);
     }
 
-    @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
         return state.getBlock() instanceof PathfindingBlock;
     }

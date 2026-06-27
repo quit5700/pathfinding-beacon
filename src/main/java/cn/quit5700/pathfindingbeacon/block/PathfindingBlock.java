@@ -75,17 +75,15 @@ public final class PathfindingBlock extends Block {
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!world.isClient && player.isCreative()) {
+        if (!world.isClient() && player.isCreative()) {
             dropStack(world, pos, new ItemStack(this));
         }
         return super.onBreak(world, pos, state, player);
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld serverWorld) {
-            WorldRouteManager.remove(serverWorld, pos);
-        }
-        super.onStateReplaced(state, world, pos, newState, moved);
+    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        WorldRouteManager.remove(world, pos);
+        super.onStateReplaced(state, world, pos, moved);
     }
 }

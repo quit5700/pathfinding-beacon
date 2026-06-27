@@ -39,7 +39,7 @@ public final class RouteNetworking {
     }
 
     public static void syncPlayer(ServerPlayerEntity player) {
-        RoutePersistentState state = WorldRouteManager.state(player.getServerWorld());
+        RoutePersistentState state = WorldRouteManager.state(player.getEntityWorld());
         ServerPlayNetworking.send(player, new RouteSnapshotPayload(
                 List.copyOf(state.data().nodes()),
                 List.copyOf(state.data().allEdges())

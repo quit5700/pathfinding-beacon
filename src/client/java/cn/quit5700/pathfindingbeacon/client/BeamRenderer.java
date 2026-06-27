@@ -3,16 +3,12 @@ package cn.quit5700.pathfindingbeacon.client;
 import cn.quit5700.pathfindingbeacon.RouteColors;
 import cn.quit5700.pathfindingbeacon.route.BeamColumnResolver;
 import cn.quit5700.pathfindingbeacon.route.Column;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
@@ -25,12 +21,12 @@ public final class BeamRenderer {
     }
 
     public static void register() {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(BeamRenderer::render);
+        WorldRenderEvents.BEFORE_TRANSLUCENT.register(BeamRenderer::render);
     }
 
     private static void render(WorldRenderContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null || context.matrixStack() == null) {
+        if (client.world == null || context.matrices() == null) {
             return;
         }
         BeamColumnResolver resolver = ClientRouteState.resolver();
@@ -38,24 +34,19 @@ public final class BeamRenderer {
             return;
         }
 
-        Vec3d camera = context.camera().getPos();
+        Vec3d camera = client.gameRenderer.getCamera().getCameraPos();
         int renderDistance = client.options.getViewDistance().getValue() * 16 + 16;
         double maxDistanceSquared = (double) renderDistance * renderDistance;
         long second = System.currentTimeMillis() / 1000L;
-        float bottom = client.world.getBottomY();
-        float top = client.world.getTopY();
+        float bottom = client.world.getDimension().minY();
+        float top = bottom + client.world.getDimension().height();
 
-        MatrixStack matrices = context.matrixStack();
+        MatrixStack matrices = context.matrices();
         matrices.push();
         matrices.translate(-camera.x, -camera.y, -camera.z);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-
-        BufferBuilder buffer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        VertexConsumer buffer = context.consumers().getBuffer(RenderLayers.debugQuads());
         for (Column column : resolver.columns()) {
             double dx = column.x() + 0.5D - camera.x;
             double dz = column.z() + 0.5D - camera.z;
@@ -72,13 +63,11 @@ public final class BeamRenderer {
             int blue = rgb & 0xFF;
             addBeam(buffer, matrix, column.x() + 0.5F, bottom, top, column.z() + 0.5F, red, green, blue);
         }
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
-        RenderSystem.disableBlend();
         matrices.pop();
     }
 
     private static void addBeam(
-            BufferBuilder buffer,
+            VertexConsumer buffer,
             Matrix4f matrix,
             float x,
             float bottom,
@@ -100,7 +89,7 @@ public final class BeamRenderer {
     }
 
     private static void quad(
-            BufferBuilder buffer,
+            VertexConsumer buffer,
             Matrix4f matrix,
             float x1, float y1, float z1,
             float x2, float y2, float z2,
