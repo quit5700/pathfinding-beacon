@@ -1,0 +1,6 @@
+{
+    "textures":  {
+                     "layer0":  "pathfinding_beacon:item/pathfinding_block_canceller"
+                 },
+    "parent":  "minecraft:item/handheld"
+}

@@ -1,0 +1,6 @@
+{
+    "textures":  {
+                     "layer0":  "pathfinding_beacon:item/id_sequence_reorderer"
+                 },
+    "parent":  "minecraft:item/handheld"
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "pathfinding_beacon",
+  "version": "${version}",
+  "name": "寻路信标",
+  "description": "使用彩色编号方块创建贯穿世界高度的寻路线。",
+  "authors": ["quit5700"],
+  "icon": "assets/pathfinding_beacon/icon.png",
+  "license": "All Rights Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["cn.quit5700.pathfindingbeacon.PathfindingBeaconMod"],
+    "client": ["cn.quit5700.pathfindingbeacon.PathfindingBeaconClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": ">=0.116.12+1.21.1"
+  }
+}
