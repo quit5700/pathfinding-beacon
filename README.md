@@ -22,7 +22,7 @@
 | `1.21.10` | `21` | `0.19.3` | `0.138.4+1.21.10` | `pathfinding-beacon-1.0.0-mc1.21.10-fabric.jar` |
 | `1.21.11` | `21` | `0.19.3` | `0.141.4+1.21.11` | `pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar` |
 
-`26.1.2` 和 `26.2` 当前有 Fabric API（Fabric 应用程序接口）包，但 Fabric Maven（Fabric 依赖仓库）暂未提供对应 Yarn Mappings（Yarn 命名映射），所以本项目暂不能按正常 Yarn/Fabric 流程构建这两个版本。
+`26.1.2` 和 `26.2` 当前需要 Java（爪哇）25，并且有 Fabric API（Fabric 应用程序接口）`0.153.0` 系列包；但实测 Fabric Maven（Fabric 依赖仓库）没有 Yarn Mappings（Yarn 命名映射），Fabric Meta（Fabric 元数据）返回的 Intermediary（中间映射）为 `net.fabricmc:intermediary:0.0.0`，Mojang 官方版本清单也没有 `client_mappings/server_mappings`（客户端/服务端官方映射）。所以这两个版本暂不能可靠构建本模组。
 
 ## 安装
 

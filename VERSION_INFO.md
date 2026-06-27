@@ -39,3 +39,11 @@
 ## 说明
 
 `build\libs` 只保留最后一次构建输出；可分发版本以 `dist` 和 GitHub Releases（GitHub 发布页）为准。
+
+## 26.x 构建记录
+
+- `26.2` 和 `26.1.2` 均需要 Java（爪哇）25；本机已安装 Azul Zulu JDK 25（Azul 的 OpenJDK 发行版），路径为 `C:\Program Files\Zulu\zulu-25`。
+- `26.2` 最新 Fabric API（Fabric 应用程序接口）：`0.153.0+26.2`。
+- `26.1.2` 最新 Fabric API（Fabric 应用程序接口）：`0.153.0+26.1.2`。
+- 阻塞原因：无 Yarn Mappings（Yarn 命名映射），无有效 Intermediary（中间映射），无 Mojang `client_mappings/server_mappings`（官方客户端/服务端映射）。
+- 当前不能生成可运行 JAR（Java 归档）文件；如果 Fabric 或 Mojang 后续补齐映射，可继续适配。

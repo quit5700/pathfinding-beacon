@@ -14,5 +14,5 @@
 
 | Minecraft（我的世界）Java 版 | 状态 | 原因 |
 | --- | --- | --- |
-| `26.1.2` | 暂未构建 | Fabric Maven（Fabric 依赖仓库）有 Fabric API，但没有对应 Yarn Mappings（Yarn 命名映射）。 |
-| `26.2` | 暂未构建 | Fabric Maven（Fabric 依赖仓库）有 Fabric API，但没有对应 Yarn Mappings（Yarn 命名映射）。 |
+| `26.1.2` | 暂未构建 | 已实测：需要 Java（爪哇）25，Fabric API（Fabric 应用程序接口）最新为 `0.153.0+26.1.2`；但 Fabric Maven（Fabric 依赖仓库）没有 Yarn Mappings（Yarn 命名映射），Fabric Meta（Fabric 元数据）返回的 Intermediary（中间映射）为 `net.fabricmc:intermediary:0.0.0`，Mojang 官方版本清单也没有 `client_mappings/server_mappings`（客户端/服务端官方映射）。 |
+| `26.2` | 暂未构建 | 已实测：需要 Java（爪哇）25，Fabric API（Fabric 应用程序接口）最新为 `0.153.0+26.2`；但 Fabric Maven（Fabric 依赖仓库）没有 Yarn Mappings（Yarn 命名映射），Fabric Meta（Fabric 元数据）返回的 Intermediary（中间映射）为 `net.fabricmc:intermediary:0.0.0`，Mojang 官方版本清单也没有 `client_mappings/server_mappings`（客户端/服务端官方映射）。 |
