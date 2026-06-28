@@ -325,3 +325,66 @@ Caused by: java.lang.NullPointerException: Block id not set
 ### 下次遇到类似问题应避免什么
 
 不要只检查方块摆放后的世界显示。对于 1.21.4+ 和 26.x，必须同时检查物品栏图标是否有 `assets/<namespace>/items/*.json`；旧的 `models/item` 不足以覆盖新版本物品显示链路。
+
+## 2026-06-28：1.21.11 崩溃，Iris 与 Sodium Mixin 不兼容
+
+### 问题类型
+
+- 客户端与服务端环境问题
+- 第三方模组兼容问题
+- Mixin（混入）问题
+
+### 问题现象
+
+Minecraft（我的世界）1.21.11 客户端进单人世界时崩溃。崩溃报告顶部表现为：
+
+```text
+java.lang.NullPointerException: Cannot invoke "net.minecraft.class_746.method_31548()" because "this.field_3712.field_1724" is null
+```
+
+但 latest.log（最新日志）里更早的真正致命错误是：
+
+```text
+Mixin apply for mod iris failed mixins.iris.compat.sodium.json:MixinDefaultChunkRenderer
+java.lang.RuntimeException: Mixin transformation of net.caffeinemc.mods.sodium.client.render.chunk.DefaultChunkRenderer failed
+```
+
+HMCL（启动器）分析结果：
+
+```text
+MODMIXIN_FAILURE
+MIXIN_APPLY_MOD_FAILED: Mixin 无法应用于 iris
+```
+
+### 根本原因
+
+Iris（光影模组）`1.10.7+mc1.21.11` 对 Sodium（钠/渲染优化模组）`0.8.13-beta.2+mc1.21.11` 的 `DefaultChunkRenderer` 注入点不匹配，导致 Mixin（混入）应用失败。`pathfinding_beacon`（寻路信标）已经加载进资源包列表和数据包列表，没有本模组初始化异常、资源异常或网络包异常。
+
+### 修改了哪些文件
+
+- `docs/PORTING_NOTES.md`
+
+本次没有修改模组代码和 JAR（Java 归档）文件。
+
+### 具体修复方式
+
+玩家环境处理：
+
+1. 暂时移除 Iris（光影模组），保留 Sodium（钠/渲染优化模组）测试。
+2. 或暂时移除 Sodium，保留 Iris 测试。
+3. 更推荐安装互相匹配的 Iris + Sodium 版本；尤其避免 Iris 版本和 Sodium beta（测试版）版本不匹配。
+
+### 如何验证已经修好
+
+在 1.21.11 客户端移除或更新 Iris/Sodium 后重新进世界。若日志不再出现：
+
+```text
+MixinDefaultChunkRenderer
+Mixin transformation of net.caffeinemc.mods.sodium.client.render.chunk.DefaultChunkRenderer failed
+```
+
+则本次崩溃已解除。
+
+### 下次遇到类似问题应避免什么
+
+不要只看 crash report（崩溃报告）顶部的 `player is null` NPE。遇到进入世界后崩溃，要优先在 latest.log（最新日志）里查更早的 `Mixin apply failed` 或 `Failed to handle packet`；这次顶部 NPE 是 Iris/Sodium Mixin 失败后的连锁异常，不是寻路信标本身导致。
