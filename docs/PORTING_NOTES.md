@@ -261,3 +261,67 @@ Caused by: java.lang.NullPointerException: Block id not set
 ### 下次遇到类似问题应避免什么
 
 不要以为 `Block id not set` 只影响 26.x。至少 1.21.11 和 26.x 都需要在构造方块/物品前设置注册键；Yarn（Yarn 命名映射）方法名是 `registryKey(...)`，Mojang Official Mappings（Mojang 官方命名映射）方法名是 `setId(...)`。
+
+## 2026-06-28：1.21.4+ 与 26.x 物品栏图标异常
+
+### 问题类型
+
+- 客户端与服务端环境问题
+- 版本适配问题
+- 资源文件 / 模型问题
+
+### 问题现象
+
+在 Minecraft（我的世界）26.2 中，方块放置到世界里显示正常，但物品栏图标显示异常。用户已测试 1.20.4、1.21.11、26.2，并提醒检查其它版本。
+
+### 根本原因
+
+1.20.4 和 1.21.1 使用旧的 `assets/<namespace>/models/item/*.json` 物品模型机制。1.21.4 之后的新版本，以及 26.x，原版资源已经引入 `assets/<namespace>/items/*.json` 物品定义文件；如果模组只提供旧的 `models/item`，方块放置后可正常通过 `blockstates` 和 `models/block` 显示，但物品栏图标可能缺失或异常。
+
+### 修改了哪些文件
+
+- `scripts/generate_resources.ps1`
+- `src/main/resources/assets/pathfinding_beacon/items/*.json`
+- `dist/pathfinding-beacon-1.0.0-mc1.21.4-fabric.jar`
+- `dist/pathfinding-beacon-1.0.0-mc1.21.8-fabric.jar`
+- `dist/pathfinding-beacon-1.0.0-mc1.21.10-fabric.jar`
+- `dist/pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar`
+- `dist/pathfinding-beacon-1.0.0-mc26.1.2-fabric.jar`
+- `dist/pathfinding-beacon-1.0.0-mc26.2-fabric.jar`
+- 对应 sources JAR（源码 Java 归档）
+- `SUPPORTED_VERSIONS.md`
+
+### 具体修复方式
+
+1. 为 30 个寻路方块新增 `assets/pathfinding_beacon/items/route_block_<1-30>.json`，指向对应 `pathfinding_beacon:block/route_block_<1-30>` 模型。
+2. 为“寻路方块取消器”和“ID顺序重排器”新增 `assets/pathfinding_beacon/items/*.json`，指向对应 `pathfinding_beacon:item/*` 模型。
+3. 更新 `scripts/generate_resources.ps1`，以后重新生成资源时会同步生成 `items` 目录。
+4. 重新构建 26.1.2、26.2；对 1.21.4、1.21.8、1.21.10、1.21.11 的既有 JAR 追加同样资源，避免改变玩法逻辑。
+
+### 如何验证已经修好
+
+已检查以下 JAR（Java 归档）均包含：
+
+- `assets/pathfinding_beacon/items/route_block_1.json`
+- `assets/pathfinding_beacon/items/pathfinding_block_canceller.json`
+
+覆盖范围：
+
+- Minecraft（我的世界）1.21.4
+- Minecraft（我的世界）1.21.8
+- Minecraft（我的世界）1.21.10
+- Minecraft（我的世界）1.21.11
+- Minecraft（我的世界）26.1.2
+- Minecraft（我的世界）26.2
+
+26.1.2 和 26.2 已运行：
+
+```powershell
+.\gradlew.bat clean build --no-daemon --console=plain
+```
+
+1.21.4、1.21.8、1.21.10 是资源补丁方式，只追加客户端物品定义文件。1.21.11 已保留上次注册键修复后的 JAR，并追加物品定义文件。
+
+### 下次遇到类似问题应避免什么
+
+不要只检查方块摆放后的世界显示。对于 1.21.4+ 和 26.x，必须同时检查物品栏图标是否有 `assets/<namespace>/items/*.json`；旧的 `models/item` 不足以覆盖新版本物品显示链路。

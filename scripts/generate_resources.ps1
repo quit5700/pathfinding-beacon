@@ -11,6 +11,7 @@ $directories = @(
     "$assets\blockstates",
     "$assets\models\block",
     "$assets\models\item",
+    "$assets\items",
     "$assets\lang",
     "$data\loot_tables\blocks",
     "$data\recipes"
@@ -69,6 +70,12 @@ for ($number = 1; $number -le 30; $number++) {
     Write-Json "$assets\models\item\route_block_$number.json" @{
         parent = "pathfinding_beacon:block/route_block_$number"
     }
+    Write-Json "$assets\items\route_block_$number.json" @{
+        model = @{
+            type = 'minecraft:model'
+            model = "pathfinding_beacon:block/route_block_$number"
+        }
+    }
     Write-Json "$data\loot_tables\blocks\route_block_$number.json" @{
         type = 'minecraft:block'
         pools = @(@{
@@ -126,9 +133,21 @@ Write-Json "$assets\models\item\pathfinding_block_canceller.json" @{
     parent = 'minecraft:item/handheld'
     textures = @{ layer0 = 'pathfinding_beacon:item/pathfinding_block_canceller' }
 }
+Write-Json "$assets\items\pathfinding_block_canceller.json" @{
+    model = @{
+        type = 'minecraft:model'
+        model = 'pathfinding_beacon:item/pathfinding_block_canceller'
+    }
+}
 Write-Json "$assets\models\item\id_sequence_reorderer.json" @{
     parent = 'minecraft:item/handheld'
     textures = @{ layer0 = 'pathfinding_beacon:item/id_sequence_reorderer' }
+}
+Write-Json "$assets\items\id_sequence_reorderer.json" @{
+    model = @{
+        type = 'minecraft:model'
+        model = 'pathfinding_beacon:item/id_sequence_reorderer'
+    }
 }
 
 Write-Json "$data\recipes\pathfinding_block_canceller.json" @{

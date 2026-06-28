@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "pathfinding_beacon:item/pathfinding_block_canceller"
+  }
+}
