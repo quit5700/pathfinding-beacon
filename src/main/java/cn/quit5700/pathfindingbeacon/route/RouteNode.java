@@ -4,3 +4,4 @@ import java.util.UUID;
 
 public record RouteNode(int number, UUID placedBy, RoutePosition position, boolean active) {
 }
+

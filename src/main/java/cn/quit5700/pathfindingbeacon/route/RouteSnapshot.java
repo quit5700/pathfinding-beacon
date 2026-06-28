@@ -12,3 +12,4 @@ public record RouteSnapshot(
         long nextEdgeOrder
 ) {
 }
+

@@ -1,18 +1,20 @@
 package cn.quit5700.pathfindingbeacon.item;
 
 import cn.quit5700.pathfindingbeacon.block.PathfindingBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public final class CancellerItem extends Item {
-    public CancellerItem(Settings settings) {
-        super(settings);
+    public CancellerItem(Properties properties) {
+        super(properties);
     }
 
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+    @Override
+    public boolean canDestroyBlock(ItemStack stack, BlockState state, Level level, BlockPos pos, LivingEntity entity) {
         return state.getBlock() instanceof PathfindingBlock;
     }
 }

@@ -3,15 +3,17 @@ package cn.quit5700.pathfindingbeacon.client;
 import cn.quit5700.pathfindingbeacon.RouteColors;
 import cn.quit5700.pathfindingbeacon.route.BeamColumnResolver;
 import cn.quit5700.pathfindingbeacon.route.Column;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3d;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+
+import java.lang.reflect.Method;
 
 public final class BeamRenderer {
     private static final float HALF_WIDTH = 0.16F;
@@ -21,12 +23,12 @@ public final class BeamRenderer {
     }
 
     public static void register() {
-        WorldRenderEvents.BEFORE_TRANSLUCENT.register(BeamRenderer::render);
+        LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(BeamRenderer::render);
     }
 
-    private static void render(WorldRenderContext context) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null || context.matrices() == null) {
+    private static void render(LevelRenderContext context) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null || context.poseStack() == null) {
             return;
         }
         BeamColumnResolver resolver = ClientRouteState.resolver();
@@ -34,36 +36,37 @@ public final class BeamRenderer {
             return;
         }
 
-        Vec3d camera = client.gameRenderer.getCamera().getCameraPos();
-        int renderDistance = client.options.getViewDistance().getValue() * 16 + 16;
+        Vec3 camera = cameraPosition(client);
+        int renderDistance = client.options.getEffectiveRenderDistance() * 16 + 16;
         double maxDistanceSquared = (double) renderDistance * renderDistance;
         long second = System.currentTimeMillis() / 1000L;
-        float bottom = client.world.getDimension().minY();
-        float top = bottom + client.world.getDimension().height();
+        float bottom = client.level.dimensionType().minY();
+        float top = bottom + client.level.dimensionType().height();
 
-        MatrixStack matrices = context.matrices();
-        matrices.push();
+        PoseStack matrices = context.poseStack();
+        matrices.pushPose();
         matrices.translate(-camera.x, -camera.y, -camera.z);
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        VertexConsumer buffer = context.consumers().getBuffer(RenderLayers.debugQuads());
-        for (Column column : resolver.columns()) {
-            double dx = column.x() + 0.5D - camera.x;
-            double dz = column.z() + 0.5D - camera.z;
-            if (dx * dx + dz * dz > maxDistanceSquared) {
-                continue;
+        context.submitNodeCollector().submitCustomGeometry(matrices, RenderTypes.debugQuads(), (pose, buffer) -> {
+            Matrix4f matrix = pose.pose();
+            for (Column column : resolver.columns()) {
+                double dx = column.x() + 0.5D - camera.x;
+                double dz = column.z() + 0.5D - camera.z;
+                if (dx * dx + dz * dz > maxDistanceSquared) {
+                    continue;
+                }
+                int number = resolver.colorAt(column, second);
+                if (number == 0) {
+                    continue;
+                }
+                int rgb = RouteColors.rgb(number);
+                int red = rgb >> 16 & 0xFF;
+                int green = rgb >> 8 & 0xFF;
+                int blue = rgb & 0xFF;
+                addBeam(buffer, matrix, column.x() + 0.5F, bottom, top, column.z() + 0.5F, red, green, blue);
             }
-            int number = resolver.colorAt(column, second);
-            if (number == 0) {
-                continue;
-            }
-            int rgb = RouteColors.rgb(number);
-            int red = rgb >> 16 & 0xFF;
-            int green = rgb >> 8 & 0xFF;
-            int blue = rgb & 0xFF;
-            addBeam(buffer, matrix, column.x() + 0.5F, bottom, top, column.z() + 0.5F, red, green, blue);
-        }
-        matrices.pop();
+        });
+        matrices.popPose();
     }
 
     private static void addBeam(
@@ -97,9 +100,23 @@ public final class BeamRenderer {
             float x4, float y4, float z4,
             int red, int green, int blue
     ) {
-        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, ALPHA);
-        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, ALPHA);
-        buffer.vertex(matrix, x3, y3, z3).color(red, green, blue, ALPHA);
-        buffer.vertex(matrix, x4, y4, z4).color(red, green, blue, ALPHA);
+        buffer.addVertex(matrix, x1, y1, z1).setColor(red, green, blue, ALPHA);
+        buffer.addVertex(matrix, x2, y2, z2).setColor(red, green, blue, ALPHA);
+        buffer.addVertex(matrix, x3, y3, z3).setColor(red, green, blue, ALPHA);
+        buffer.addVertex(matrix, x4, y4, z4).setColor(red, green, blue, ALPHA);
+    }
+
+    private static Vec3 cameraPosition(Minecraft client) {
+        try {
+            Method method = client.gameRenderer.getClass().getMethod("mainCamera");
+            return ((Camera) method.invoke(client.gameRenderer)).position();
+        } catch (ReflectiveOperationException ignored) {
+            try {
+                Method method = client.gameRenderer.getClass().getMethod("getMainCamera");
+                return ((Camera) method.invoke(client.gameRenderer)).position();
+            } catch (ReflectiveOperationException ignoredAgain) {
+                return client.getCameraEntity() == null ? Vec3.ZERO : client.getCameraEntity().position();
+            }
+        }
     }
 }

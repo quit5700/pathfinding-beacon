@@ -2,17 +2,17 @@ package cn.quit5700.pathfindingbeacon.event;
 
 import cn.quit5700.pathfindingbeacon.PathfindingBeaconMod;
 import cn.quit5700.pathfindingbeacon.network.RouteNetworking;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +25,10 @@ public final class PlayerEvents {
 
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            handler.player.sendMessage(Text.literal("寻路器取消指令 idcancel <1-30>"), false);
+            handler.player.sendSystemMessage(Component.literal("寻路器取消指令idcancel <1-30>"));
             RouteNetworking.syncPlayer(handler.player);
         });
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) ->
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) ->
                 RouteNetworking.syncPlayer(player));
         ServerTickEvents.END_SERVER_TICK.register(PlayerEvents::unlockRecipesForPickaxeOwners);
     }
@@ -37,7 +37,7 @@ public final class PlayerEvents {
         if (++ticks % 20 != 0) {
             return;
         }
-        List<RegistryKey<Recipe<?>>> ids = new ArrayList<>();
+        List<ResourceKey<Recipe<?>>> ids = new ArrayList<>();
         ids.add(recipeKey("route_block_1"));
         for (int i = 2; i <= 30; i++) {
             ids.add(recipeKey("route_block_" + i));
@@ -45,19 +45,19 @@ public final class PlayerEvents {
         ids.add(recipeKey("pathfinding_block_canceller"));
         ids.add(recipeKey("id_sequence_reorderer"));
 
-        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            boolean hasPickaxe = player.getInventory().getMainStacks().stream().anyMatch(PlayerEvents::isPickaxe);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            boolean hasPickaxe = player.getInventory().getNonEquipmentItems().stream().anyMatch(PlayerEvents::isPickaxe);
             if (hasPickaxe) {
-                player.unlockRecipes(ids);
+                player.awardRecipesByKey(ids);
             }
         }
     }
 
     private static boolean isPickaxe(ItemStack stack) {
-        return stack.isIn(ItemTags.PICKAXES);
+        return stack.is(holder -> holder.is(ItemTags.PICKAXES));
     }
 
-    private static RegistryKey<Recipe<?>> recipeKey(String path) {
-        return RegistryKey.of(RegistryKeys.RECIPE, PathfindingBeaconMod.id(path));
+    private static ResourceKey<Recipe<?>> recipeKey(String path) {
+        return ResourceKey.create(Registries.RECIPE, PathfindingBeaconMod.id(path));
     }
 }

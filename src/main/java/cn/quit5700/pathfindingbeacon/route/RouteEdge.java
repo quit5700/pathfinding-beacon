@@ -10,3 +10,4 @@ public record RouteEdge(
         return first.equals(position) || second.equals(position);
     }
 }
+

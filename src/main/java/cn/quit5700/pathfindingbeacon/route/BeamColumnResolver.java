@@ -73,3 +73,4 @@ public final class BeamColumnResolver {
     private record ResolvedColumn(int fixedNumber, List<Integer> cyclingNumbers) {
     }
 }
+

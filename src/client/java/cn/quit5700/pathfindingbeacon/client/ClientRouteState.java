@@ -22,3 +22,4 @@ public final class ClientRouteState {
                         resolver = BeamColumnResolver.resolve(payload.nodes(), payload.edges())));
     }
 }
+

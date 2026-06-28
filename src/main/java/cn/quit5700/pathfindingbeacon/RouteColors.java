@@ -26,3 +26,4 @@ public final class RouteColors {
         return RGB.get(number - 1);
     }
 }
+

@@ -3,30 +3,30 @@ package cn.quit5700.pathfindingbeacon.block;
 import cn.quit5700.pathfindingbeacon.registry.ModItems;
 import cn.quit5700.pathfindingbeacon.route.PlacementStatus;
 import cn.quit5700.pathfindingbeacon.route.WorldRouteManager;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.PushReaction;
 import org.jetbrains.annotations.Nullable;
 
 public final class PathfindingBlock extends Block {
     private final int number;
 
     public PathfindingBlock(int number) {
-        super(AbstractBlock.Settings.copy(Blocks.WHITE_WOOL)
-                .luminance(state -> 15)
+        super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.STONE)
+                .lightLevel(state -> 15)
                 .strength(-1.0F, 3_600_000.0F)
-                .pistonBehavior(PistonBehavior.BLOCK));
+                .pushReaction(PushReaction.BLOCK));
         this.number = number;
     }
 
@@ -36,54 +36,58 @@ public final class PathfindingBlock extends Block {
 
     @Nullable
     @Override
-    public BlockState getPlacementState(ItemPlacementContext context) {
-        if (context.getWorld() instanceof ServerWorld world
-                && WorldRouteManager.hasNumberAtColumn(world, number, context.getBlockPos().getX(), context.getBlockPos().getZ())) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (context.getLevel() instanceof ServerLevel world
+                && WorldRouteManager.hasNumberAtColumn(world, number, context.getClickedPos().getX(), context.getClickedPos().getZ())) {
             if (context.getPlayer() != null) {
-                context.getPlayer().sendMessage(Text.literal("已有同号码方块，不得放置").styled(style -> style.withColor(0xFF5555)), true);
+                context.getPlayer().sendOverlayMessage(
+                        Component.literal("已有同号码方块,不得放置").withStyle(style -> style.withColor(0xFF5555))
+                );
             }
             return null;
         }
-        return getDefaultState();
+        return defaultBlockState();
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        if (world instanceof ServerWorld serverWorld && placer instanceof PlayerEntity player) {
-            PlacementStatus status = WorldRouteManager.place(serverWorld, number, player.getUuid(), pos).status();
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        super.setPlacedBy(world, pos, state, placer, itemStack);
+        if (world instanceof ServerLevel serverWorld && placer instanceof Player player) {
+            PlacementStatus status = WorldRouteManager.place(serverWorld, number, player.getUUID(), pos).status();
             if (status == PlacementStatus.INACTIVE) {
-                player.sendMessage(Text.literal("其他玩家已使用这个颜色，该放置没有作用，请破坏")
-                        .styled(style -> style.withColor(0xFF5555)), true);
+                player.sendOverlayMessage(
+                        Component.literal("其他玩家已使用这个颜色,该放置没有作用,请破坏.")
+                                .withStyle(style -> style.withColor(0xFF5555))
+                );
             }
         }
     }
 
     @Override
-    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter world, BlockPos pos) {
         if (player.isCreative()) {
             return 1.0F;
         }
-        if (player.getMainHandStack().isOf(ModItems.CANCELLER)) {
-            if (!(world instanceof ServerWorld serverWorld)) {
+        if (player.getMainHandItem().is(ModItems.CANCELLER)) {
+            if (!(world instanceof ServerLevel serverWorld)) {
                 return 0.34F;
             }
-            return WorldRouteManager.canRemove(serverWorld, player.getUuid(), pos, false) ? 0.34F : 0.0F;
+            return WorldRouteManager.canRemove(serverWorld, player.getUUID(), pos, false) ? 0.34F : 0.0F;
         }
         return 0.0F;
     }
 
     @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!world.isClient() && player.isCreative()) {
-            dropStack(world, pos, new ItemStack(this));
+    public BlockState playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+        if (!world.isClientSide() && player.isCreative()) {
+            popResource(world, pos, new ItemStack(this));
         }
-        return super.onBreak(world, pos, state, player);
+        return super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
-    public void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         WorldRouteManager.remove(world, pos);
-        super.onStateReplaced(state, world, pos, moved);
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 }

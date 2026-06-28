@@ -11,3 +11,4 @@ public final class PathfindingBeaconClient implements ClientModInitializer {
         BeamRenderer.register();
     }
 }
+

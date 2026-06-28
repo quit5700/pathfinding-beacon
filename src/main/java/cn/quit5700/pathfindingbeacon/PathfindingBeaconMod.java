@@ -7,13 +7,13 @@ import cn.quit5700.pathfindingbeacon.registry.ModBlocks;
 import cn.quit5700.pathfindingbeacon.registry.ModItemGroup;
 import cn.quit5700.pathfindingbeacon.registry.ModItems;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 public final class PathfindingBeaconMod implements ModInitializer {
     public static final String MOD_ID = "pathfinding_beacon";
 
     public static Identifier id(String path) {
-        return Identifier.of(MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     @Override
@@ -26,3 +26,4 @@ public final class PathfindingBeaconMod implements ModInitializer {
         RouteNetworking.registerServer();
     }
 }
+

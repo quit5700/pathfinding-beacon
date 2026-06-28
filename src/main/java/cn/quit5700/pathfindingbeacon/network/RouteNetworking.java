@@ -9,13 +9,13 @@ import cn.quit5700.pathfindingbeacon.route.WorldRouteManager;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,36 +29,36 @@ public final class RouteNetworking {
     }
 
     public static void registerServer() {
-        PayloadTypeRegistry.playS2C().register(RouteSnapshotPayload.ID, RouteSnapshotPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(RouteSnapshotPayload.ID, RouteSnapshotPayload.CODEC);
     }
 
-    public static void syncWorld(ServerWorld world) {
-        for (ServerPlayerEntity player : PlayerLookup.world(world)) {
+    public static void syncWorld(ServerLevel world) {
+        for (ServerPlayer player : PlayerLookup.level(world)) {
             syncPlayer(player);
         }
     }
 
-    public static void syncPlayer(ServerPlayerEntity player) {
-        RoutePersistentState state = WorldRouteManager.state(player.getEntityWorld());
+    public static void syncPlayer(ServerPlayer player) {
+        RoutePersistentState state = WorldRouteManager.state(player.level());
         ServerPlayNetworking.send(player, new RouteSnapshotPayload(
                 List.copyOf(state.data().nodes()),
                 List.copyOf(state.data().allEdges())
         ));
     }
 
-    public record RouteSnapshotPayload(List<RouteNode> nodes, List<RouteEdge> edges) implements CustomPayload {
-        public static final CustomPayload.Id<RouteSnapshotPayload> ID = new CustomPayload.Id<>(ROUTE_SNAPSHOT);
-        public static final PacketCodec<RegistryByteBuf, RouteSnapshotPayload> CODEC = CustomPayload.codecOf(
+    public record RouteSnapshotPayload(List<RouteNode> nodes, List<RouteEdge> edges) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<RouteSnapshotPayload> ID = new CustomPacketPayload.Type<>(ROUTE_SNAPSHOT);
+        public static final StreamCodec<RegistryFriendlyByteBuf, RouteSnapshotPayload> CODEC = CustomPacketPayload.codec(
                 RouteSnapshotPayload::write,
                 RouteSnapshotPayload::read
         );
 
         @Override
-        public CustomPayload.Id<? extends CustomPayload> getId() {
+        public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
             return ID;
         }
 
-        private void write(RegistryByteBuf buf) {
+        private void write(RegistryFriendlyByteBuf buf) {
             buf.writeVarInt(nodes.size());
             for (RouteNode node : nodes) {
                 buf.writeVarInt(node.number());
@@ -74,7 +74,7 @@ public final class RouteNetworking {
             }
         }
 
-        private static RouteSnapshotPayload read(RegistryByteBuf buf) {
+        private static RouteSnapshotPayload read(RegistryFriendlyByteBuf buf) {
             int nodeCount = buf.readVarInt();
             List<RouteNode> nodes = new ArrayList<>(nodeCount);
             for (int i = 0; i < nodeCount; i++) {
@@ -100,3 +100,4 @@ public final class RouteNetworking {
         }
     }
 }
+
