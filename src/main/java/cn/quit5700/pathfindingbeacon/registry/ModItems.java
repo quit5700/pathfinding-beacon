@@ -3,6 +3,9 @@ package cn.quit5700.pathfindingbeacon.registry;
 import cn.quit5700.pathfindingbeacon.PathfindingBeaconMod;
 import cn.quit5700.pathfindingbeacon.item.CancellerItem;
 import cn.quit5700.pathfindingbeacon.item.SequenceReordererItem;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,15 +16,17 @@ import java.util.List;
 
 public final class ModItems {
     public static final List<BlockItem> ROUTE_BLOCK_ITEMS = registerBlockItems();
+    private static final Identifier CANCELLER_ID = PathfindingBeaconMod.id("pathfinding_block_canceller");
+    private static final Identifier SEQUENCE_REORDERER_ID = PathfindingBeaconMod.id("id_sequence_reorderer");
     public static final Item CANCELLER = Registry.register(
             BuiltInRegistries.ITEM,
-            PathfindingBeaconMod.id("pathfinding_block_canceller"),
-            new CancellerItem(new Item.Properties().stacksTo(1))
+            CANCELLER_ID,
+            new CancellerItem(itemProperties(CANCELLER_ID).stacksTo(1))
     );
     public static final Item SEQUENCE_REORDERER = Registry.register(
             BuiltInRegistries.ITEM,
-            PathfindingBeaconMod.id("id_sequence_reorderer"),
-            new SequenceReordererItem(new Item.Properties().stacksTo(1))
+            SEQUENCE_REORDERER_ID,
+            new SequenceReordererItem(itemProperties(SEQUENCE_REORDERER_ID).stacksTo(1))
     );
 
     private ModItems() {
@@ -30,11 +35,16 @@ public final class ModItems {
     private static List<BlockItem> registerBlockItems() {
         List<BlockItem> result = new ArrayList<>(30);
         for (int i = 0; i < ModBlocks.ROUTE_BLOCKS.size(); i++) {
-            BlockItem item = new BlockItem(ModBlocks.ROUTE_BLOCKS.get(i), new Item.Properties());
-            Registry.register(BuiltInRegistries.ITEM, PathfindingBeaconMod.id("route_block_" + (i + 1)), item);
+            Identifier id = PathfindingBeaconMod.id("route_block_" + (i + 1));
+            BlockItem item = new BlockItem(ModBlocks.ROUTE_BLOCKS.get(i), itemProperties(id));
+            Registry.register(BuiltInRegistries.ITEM, id, item);
             result.add(item);
         }
         return List.copyOf(result);
+    }
+
+    private static Item.Properties itemProperties(Identifier id) {
+        return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id));
     }
 
     public static void initialize() {

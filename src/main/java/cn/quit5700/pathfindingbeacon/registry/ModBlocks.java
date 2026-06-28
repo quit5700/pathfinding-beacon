@@ -2,6 +2,9 @@ package cn.quit5700.pathfindingbeacon.registry;
 
 import cn.quit5700.pathfindingbeacon.PathfindingBeaconMod;
 import cn.quit5700.pathfindingbeacon.block.PathfindingBlock;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
@@ -18,10 +21,12 @@ public final class ModBlocks {
     private static List<PathfindingBlock> registerBlocks() {
         List<PathfindingBlock> result = new ArrayList<>(30);
         for (int number = 1; number <= 30; number++) {
-            PathfindingBlock block = new PathfindingBlock(number);
+            Identifier id = PathfindingBeaconMod.id("route_block_" + number);
+            ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, id);
+            PathfindingBlock block = new PathfindingBlock(number, key);
             Registry.register(
                     BuiltInRegistries.BLOCK,
-                    PathfindingBeaconMod.id("route_block_" + number),
+                    id,
                     block
             );
             result.add(block);

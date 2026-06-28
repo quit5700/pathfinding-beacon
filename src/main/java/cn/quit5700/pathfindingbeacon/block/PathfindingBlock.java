@@ -5,6 +5,7 @@ import cn.quit5700.pathfindingbeacon.route.PlacementStatus;
 import cn.quit5700.pathfindingbeacon.route.WorldRouteManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,11 +23,12 @@ import org.jetbrains.annotations.Nullable;
 public final class PathfindingBlock extends Block {
     private final int number;
 
-    public PathfindingBlock(int number) {
+    public PathfindingBlock(int number, ResourceKey<Block> key) {
         super(BlockBehaviour.Properties.ofLegacyCopy(Blocks.STONE)
                 .lightLevel(state -> 15)
                 .strength(-1.0F, 3_600_000.0F)
-                .pushReaction(PushReaction.BLOCK));
+                .pushReaction(PushReaction.BLOCK)
+                .setId(key));
         this.number = number;
     }
 

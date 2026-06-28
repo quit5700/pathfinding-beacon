@@ -9,3 +9,5 @@
 | `1.21.8` | `21` | `0.19.3` | `0.136.1+1.21.8` | `1.11.8` | `1.21.8+build.1` | `dist\pathfinding-beacon-1.0.0-mc1.21.8-fabric.jar` | `A67C8215114A6D6FB87E00BD387951A95DB6A33488FF0C98AFD86B5EFD8439AB` |
 | `1.21.10` | `21` | `0.19.3` | `0.138.4+1.21.10` | `1.11.8` | `1.21.10+build.3` | `dist\pathfinding-beacon-1.0.0-mc1.21.10-fabric.jar` | `D562872B48A210C9F45C20CADD5D9FB2589A16BAC677D1941AC07382C62D6A29` |
 | `1.21.11` | `21` | `0.19.3` | `0.141.4+1.21.11` | `1.17.12` | `1.21.11+build.6` | `dist\pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar` | `D325350EBD1D25AFD0D0CDA8B65FB79855C9D6BED897E7E99F10695A18057D14` |
+| `26.1.2` | `25` | `0.19.3` | `0.153.0+26.1.2` | `1.15-SNAPSHOT`（解析为 `1.15.5`） | Mojang Official Mappings（Mojang 官方命名映射） | `dist\pathfinding-beacon-1.0.0-mc26.1.2-fabric.jar` | `0FF6B00E74E2838D06B3C15F84F981B69CF1D0D2CBDA1DFC7EF682C3A65CED73` |
+| `26.2` | `25` | `0.19.3` | `0.153.0+26.2` | `1.15-SNAPSHOT`（解析为 `1.15.5`） | Mojang Official Mappings（Mojang 官方命名映射） | `dist\pathfinding-beacon-1.0.0-mc26.2-fabric.jar` | `BD048CB3DE9EA874F7CDBDB26D173E49D3283704A37DD62B7CDC18B7B6AA6614` |
