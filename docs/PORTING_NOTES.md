@@ -203,3 +203,61 @@ Caused by: java.lang.NullPointerException: Block id not set
 ### 下次遇到类似问题应避免什么
 
 不要只以 `./gradlew build`（Gradle 构建）成功判断 26.x 适配完成。26.x 中 Block（方块）/Item（物品）注册键缺失属于运行时初始化问题，必须检查 `Properties.setId(...)` 是否在构造前完成。
+
+## 2026-06-28：1.21.11 启动崩溃，Block id not set
+
+### 问题类型
+
+- 版本适配问题
+- 旧版本 API 迁移问题
+- Yarn / Fabric API 问题
+
+### 问题现象
+
+Minecraft（我的世界）1.21.11 客户端启动时，在初始化 `pathfinding_beacon` 主入口阶段崩溃：
+
+```text
+Could not execute entrypoint stage 'main'
+Caused by: java.lang.NullPointerException: Block id not set
+```
+
+崩溃位置：
+
+- `PathfindingBlock.<init>`
+- `ModBlocks.registerBlocks`
+- `PathfindingBeaconMod.onInitialize`
+
+### 根本原因
+
+1.21.11 的 Yarn Mappings（Yarn 命名映射）下，`AbstractBlock.Settings`（方块设置）和 `Item.Settings`（物品设置）也需要在构造 Block（方块）/Item（物品）前绑定 `RegistryKey`（注册键）。旧写法先构造对象再注册，编译能通过，但启动时默认掉落表或翻译键推导会找不到方块 ID。
+
+### 修改了哪些文件
+
+- 临时 1.21.11 工作树：`.worktrees/mc12111-fix/src/main/java/cn/quit5700/pathfindingbeacon/block/PathfindingBlock.java`
+- 临时 1.21.11 工作树：`.worktrees/mc12111-fix/src/main/java/cn/quit5700/pathfindingbeacon/registry/ModBlocks.java`
+- 临时 1.21.11 工作树：`.worktrees/mc12111-fix/src/main/java/cn/quit5700/pathfindingbeacon/registry/ModItems.java`
+- `dist/pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar`
+- `dist/pathfinding-beacon-1.0.0-mc1.21.11-fabric-sources.jar`
+- `SUPPORTED_VERSIONS.md`
+- `docs/PORTING_NOTES.md`
+
+### 具体修复方式
+
+1. 方块注册时先创建 `RegistryKey<Block>`（方块注册键）。
+2. 调用 `AbstractBlock.Settings.registryKey(key)`（设置注册键）后再构造 `PathfindingBlock`。
+3. 方块物品和两个工具物品注册时先创建 `RegistryKey<Item>`（物品注册键）。
+4. 调用 `Item.Settings.registryKey(key)`（设置注册键）后再构造 `BlockItem`、`CancellerItem`、`SequenceReordererItem`。
+
+### 如何验证已经修好
+
+已在 1.21.11 临时工作树验证：
+
+```powershell
+.\gradlew.bat clean build -x test --no-daemon --console=plain
+```
+
+说明：完整 `build`（构建）在旧 1.21.11 工作树的 `test`（测试）阶段会因为中文路径下测试类加载问题失败；该问题已在当前主线 26.x 构建脚本中修复，但旧 1.21.11 临时工作树未迁入该测试脚本。`compileJava`（编译 Java）、`remapJar`（重映射 JAR）、`remapSourcesJar`（重映射源码 JAR）均已成功。
+
+### 下次遇到类似问题应避免什么
+
+不要以为 `Block id not set` 只影响 26.x。至少 1.21.11 和 26.x 都需要在构造方块/物品前设置注册键；Yarn（Yarn 命名映射）方法名是 `registryKey(...)`，Mojang Official Mappings（Mojang 官方命名映射）方法名是 `setId(...)`。
