@@ -9,10 +9,3 @@
 | `1.21.8` | `21` | `0.19.3` | `0.136.1+1.21.8` | `1.11.8` | `1.21.8+build.1` | `dist\pathfinding-beacon-1.0.0-mc1.21.8-fabric.jar` | `A67C8215114A6D6FB87E00BD387951A95DB6A33488FF0C98AFD86B5EFD8439AB` |
 | `1.21.10` | `21` | `0.19.3` | `0.138.4+1.21.10` | `1.11.8` | `1.21.10+build.3` | `dist\pathfinding-beacon-1.0.0-mc1.21.10-fabric.jar` | `D562872B48A210C9F45C20CADD5D9FB2589A16BAC677D1941AC07382C62D6A29` |
 | `1.21.11` | `21` | `0.19.3` | `0.141.4+1.21.11` | `1.17.12` | `1.21.11+build.6` | `dist\pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar` | `D325350EBD1D25AFD0D0CDA8B65FB79855C9D6BED897E7E99F10695A18057D14` |
-
-## 暂未构建版本
-
-| Minecraft（我的世界）Java 版 | 状态 | 原因 |
-| --- | --- | --- |
-| `26.1.2` | 暂未构建 | 已实测：需要 Java（爪哇）25，Fabric API（Fabric 应用程序接口）最新为 `0.153.0+26.1.2`；但 Fabric Maven（Fabric 依赖仓库）没有 Yarn Mappings（Yarn 命名映射），Fabric Meta（Fabric 元数据）返回的 Intermediary（中间映射）为 `net.fabricmc:intermediary:0.0.0`，Mojang 官方版本清单也没有 `client_mappings/server_mappings`（客户端/服务端官方映射）。 |
-| `26.2` | 暂未构建 | 已实测：需要 Java（爪哇）25，Fabric API（Fabric 应用程序接口）最新为 `0.153.0+26.2`；但 Fabric Maven（Fabric 依赖仓库）没有 Yarn Mappings（Yarn 命名映射），Fabric Meta（Fabric 元数据）返回的 Intermediary（中间映射）为 `net.fabricmc:intermediary:0.0.0`，Mojang 官方版本清单也没有 `client_mappings/server_mappings`（客户端/服务端官方映射）。 |
