@@ -7,20 +7,22 @@
 - 模组名称：寻路信标
 - 模组 ID：`pathfinding_beacon`
 - 模组版本：`1.0.0`
-- 下载位置：[GitHub Releases（GitHub 发布页）](https://github.com/quit5700/pathfinding-beacon/releases)
+- 下载位置：[GitHub Releases（GitHub 发行版）](https://github.com/quit5700/pathfinding-beacon/releases)
 - 前置模组：需要 Fabric API（Fabric 应用程序接口），不需要其他前置模组。
 
 ## 已发布适配版本
 
-| Minecraft（我的世界）Java 版 | Java（爪哇） | Fabric Loader（Fabric 模组加载器） | Fabric API（Fabric 应用程序接口） | 下载文件 |
-| --- | --- | --- | --- | --- |
-| `1.20.1` | `17` | `0.15.11` | `0.92.9+1.20.1` | `pathfinding-beacon-1.0.0-mc1.20.1-fabric.jar` |
-| `1.20.4` | `17` | `0.15.11` | `0.97.3+1.20.4` | `pathfinding-beacon-1.0.0-mc1.20.4-fabric.jar` |
-| `1.21.1` | `21` | `0.19.3` | `0.116.12+1.21.1` | `pathfinding-beacon-1.0.0-mc1.21.1-fabric.jar` |
-| `1.21.4` | `21` | `0.19.3` | `0.119.4+1.21.4` | `pathfinding-beacon-1.0.0-mc1.21.4-fabric.jar` |
-| `1.21.8` | `21` | `0.19.3` | `0.136.1+1.21.8` | `pathfinding-beacon-1.0.0-mc1.21.8-fabric.jar` |
-| `1.21.10` | `21` | `0.19.3` | `0.138.4+1.21.10` | `pathfinding-beacon-1.0.0-mc1.21.10-fabric.jar` |
-| `1.21.11` | `21` | `0.19.3` | `0.141.4+1.21.11` | `pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar` |
+| Minecraft（我的世界）Java 版 | Java（爪哇） | Fabric Loader（Fabric 模组加载器） | Fabric API（Fabric 应用程序接口） | Fabric Loom（Fabric 构建插件） | Mappings（命名映射） | 下载文件 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `1.20.1` | `17` | `0.15.11` | `0.92.9+1.20.1` | `1.7.4` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.20.1-fabric.jar` |
+| `1.20.4` | `17` | `0.15.11` | `0.97.3+1.20.4` | `1.7.4` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.20.4-fabric.jar` |
+| `1.21.1` | `21` | `0.19.3` | `0.116.12+1.21.1` | `1.7.4` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.21.1-fabric.jar` |
+| `1.21.4` | `21` | `0.19.3` | `0.119.4+1.21.4` | `1.7.4` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.21.4-fabric.jar` |
+| `1.21.8` | `21` | `0.19.3` | `0.136.1+1.21.8` | `1.7.4` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.21.8-fabric.jar` |
+| `1.21.10` | `21` | `0.19.3` | `0.138.4+1.21.10` | `1.7.4` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.21.10-fabric.jar` |
+| `1.21.11` | `21` | `0.19.3` | `0.141.4+1.21.11` | `1.17.12` | Yarn Mappings（Yarn 命名映射） | `pathfinding-beacon-1.0.0-mc1.21.11-fabric.jar` |
+| `26.1.2` | `25` | `0.19.3` | `0.153.0+26.1.2` | `1.15-SNAPSHOT`（解析为 `1.15.5`） | Mojang Official Mappings（Mojang 官方命名映射） | `pathfinding-beacon-1.0.0-mc26.1.2-fabric.jar` |
+| `26.2` | `25` | `0.19.3` | `0.153.0+26.2` | `1.15-SNAPSHOT`（解析为 `1.15.5`） | Mojang Official Mappings（Mojang 官方命名映射） | `pathfinding-beacon-1.0.0-mc26.2-fabric.jar` |
 
 ## 安装
 
@@ -28,7 +30,7 @@
 2. 安装对应版本的 Fabric Loader（Fabric 模组加载器）。
 3. 安装对应版本的 Fabric API（Fabric 应用程序接口）。
 4. 把下载的 `pathfinding-beacon-...-fabric.jar` 放入游戏的 `mods`（模组）文件夹。
-5. 启动游戏后，创造模式物品栏里会出现“寻路”标签页。
+5. 启动游戏后，创造模式物品栏会出现“寻路”标签页。
 
 ## 主要功能
 
@@ -54,4 +56,4 @@
 .\gradlew.bat clean build
 ```
 
-当前仓库源码配置保留在最新已验证版本 `1.21.11`。历史版本 JAR（Java 归档）文件保存在 `dist`，并上传到 GitHub Releases（GitHub 发布页）。
+当前源码配置保留在最新已验证版本 `26.2`。历史版本 JAR（Java 归档）文件保存在 `dist`，并上传到 GitHub Releases（GitHub 发行版）。
