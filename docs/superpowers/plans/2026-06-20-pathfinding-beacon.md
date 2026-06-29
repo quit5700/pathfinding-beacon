@@ -199,7 +199,7 @@ Expected: tests PASS and server reaches `Done`
 - [ ] **Step 2: 注册大小写组合可解析的取消指令入口和整数参数**
 
 ```java
-literal("idcancel").then(argument("id", integer(1, 30)).executes(...));
+literal("pfcancel").then(argument("id", integer(1, 30)).executes(...));
 ```
 
 - [ ] **Step 3: 清除当前维度全部有效/无效节点、边、顺序和占用，不掉落**

@@ -10,7 +10,7 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 public final class IdCancelCommand {
-    private static final String COMMAND = "idcancel";
+    private static final String COMMAND = "pfcancel";
 
     private IdCancelCommand() {
     }
